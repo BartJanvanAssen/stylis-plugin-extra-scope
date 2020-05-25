@@ -278,6 +278,48 @@ test('should add single extra scope correctly for same-level rules', () => {
 `)
 })
 
+test('should add single extra scope correctly for nested scopes after an @media rule', () => {
+  const stylis = new Stylis()
+  stylis.use(extraScopePlugin('#my-scope'))
+
+  const actual = stylis(
+    '.some-class',
+    `
+    min-width: 12rem;
+
+    div {
+      height: 10px;
+    }
+
+    @media (min-width: 768px) {
+      margin: 0 20px 0 0;
+    }
+    
+    span {
+      height: 30px;
+    }
+  `,
+  )
+
+  expect(formatCss(actual)).toMatchInlineSnapshot(`
+"#my-scope .some-class {
+  min-width: 12rem;
+}
+#my-scope .some-class div {
+  height: 10px;
+}
+@media (min-width: 768px) {
+  #my-scope .some-class {
+    margin: 0 20px 0 0;
+  }
+}
+#my-scope .some-class span {
+  height: 30px;
+}
+"
+`)
+})
+
 test('multiple extra scopes', () => {
   const stylis = new Stylis()
   stylis.use(extraScopePlugin('#my-scope', '#my-second-scope'))
